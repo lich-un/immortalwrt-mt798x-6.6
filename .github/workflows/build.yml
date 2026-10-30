@@ -26,7 +26,7 @@ jobs:
       # =====================================================
       - name: Load Redmi AX6000 OpenWrt U-Boot (110M layout) defconfig
         run: |
-          cp defconfig/redmi_ax6000_openwrt-uboot.defconfig .config
+          cp defconfig/mt7986-ax6000.config .config
           make defconfig
       - name: Download all source packages
         run: make download -j8
