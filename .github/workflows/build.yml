@@ -1,0 +1,39 @@
+name: Build AX6000 mt798x-6.6 mtwifi
+on:
+  workflow_dispatch: # 仅手动触发
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install ImmortalWrt build dependencies
+        run: |
+          sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.org/init_build_environment.sh)'
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ${{ github.workflow }}-${{ github.sha }}
+          restore-keys: ${{ github.workflow }}
+      # ========== 新增这两行，严格对齐quickstart ==========
+      - name: Update feeds
+        run: ./scripts/feeds update -a
+      - name: Install feeds
+        run: ./scripts/feeds install -a
+      # =====================================================
+      - name: Load Redmi AX6000 OpenWrt U-Boot (110M layout) defconfig
+        run: |
+          cp defconfig/redmi_ax6000_openwrt-uboot.defconfig .config
+          make defconfig
+      - name: Download all source packages
+        run: make download -j8
+      - name: Compile firmware
+        run: make V=s -j$(nproc)
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AX6000-firmware
+          path: bin/targets/mediatek/filogic/
