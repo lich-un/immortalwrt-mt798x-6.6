@@ -6,14 +6,14 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Install ImmortalWrt build dependencies
         run: |
           sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.org/init_build_environment.sh)'
       - name: Cache ccache
-        uses: actions/cache@v6
+        uses: actions/cache@v5
         with:
           path: ~/.ccache
           key: ${{ github.workflow }}-${{ github.sha }}
@@ -33,7 +33,7 @@ jobs:
       - name: Compile firmware
         run: make V=s -j$(nproc)
       - name: Upload firmware artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AX6000-firmware
           path: bin/targets/mediatek/filogic/
